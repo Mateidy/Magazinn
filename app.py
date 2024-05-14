@@ -42,7 +42,7 @@ def create_app(db_url=None):
         return (
             jsonify({"message": "The token has expired." , "error": "token_expired"}),401,
         )
-    @jwt.invalid_token_loader()
+    @jwt.invalid_token_loader
     def invalid_token_callback(error):
         return (
             jsonify(
@@ -60,9 +60,9 @@ def create_app(db_url=None):
             ),
             401,
         )
-        @app.before_first_request
-        def create_tables():
-            db.create_all()
+    @app.before_first_request
+    def create_tables():
+        db.create_all()
 
 
 
