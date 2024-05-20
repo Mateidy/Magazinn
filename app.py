@@ -4,10 +4,12 @@ import secrets
 from flask import Flask , jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 
 
 from db import db
+from blocklist import BLOCKLIST
 import models
 
 from resources.item import blp as ItemBlueprint
@@ -31,11 +33,43 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]=False
     db.init_app(app)
 
+    migrate= Migrate(app,db)
 
     api=Api(app)
 
     app.config["JWT_SECRET_KEY"]="295040099478539289169991040315992286316"
     jwt=JWTManager(app)
+
+
+    @jwt.token_in_blocklist_loader
+    def check_if_token_in_blocklist(jwt_header,jwt_payload):
+        return jwt_payload["jti"] in BLOCKLIST
+
+    @jwt.revoked_token_loader
+    def revoked_token_callback(jwt_header,jwt_payload):
+        return (
+            jsonify(
+                {"description":"The token has been revoked." , "error":"token_revoked"}
+            ),
+            401,
+        )
+
+    @jwt.needs_fresh_token_loader
+    def token_not_fresh_callback(jwt_header,jwt_payload):
+        return (
+            jsonify(
+                {
+                    "description":"The token is not fresh.",
+                    "error":"fresh_token_required",
+                }
+            ),
+            401,
+        )
+    @jwt.additional_claims_loader
+    def add_claims_to_jwt(identity):
+        if identity==1:
+            return{"is_admin":True}
+        return {"is_admin":False}
 
     @jwt.expired_token_loader
     def expired_token_loader(jwt_header,jwt_payload):
@@ -60,11 +94,12 @@ def create_app(db_url=None):
             ),
             401,
         )
-    @app.before_first_request
+
     def create_tables():
         db.create_all()
 
-
+    with app.app_context():
+        create_tables()
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)
@@ -73,12 +108,11 @@ def create_app(db_url=None):
 
     return app
 
-
 if __name__ == "__main__":
-    app=create_app()
-    with app.app_context():
-        db.create_all()
+    app = create_app()
     app.run(debug=True)
+
+
 
 
 
