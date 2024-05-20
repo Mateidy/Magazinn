@@ -4,4 +4,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 COPY . .
 EXPOSE 80
-CMD ["gunicorn", "--bind", "0.0.0.0:80","app:create_app()"]
+CMD ["gunicorn", "--bind", "0.0.0.0:${PORT:-80}","app:create_app()"]
