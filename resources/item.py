@@ -32,7 +32,6 @@ class Item(MethodView):
         return {"message": "Item deleted"}
 
 
-
     @blp.arguments(ItemUpdateSchema)
     @blp.response(200,ItemSchema)
 
