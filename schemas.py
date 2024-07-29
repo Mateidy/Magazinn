@@ -41,27 +41,11 @@ class PlainProductSchema(Schema):
     name=fields.Str(required=True)
     price=fields.Float(required=True)
 
-class PlainOrderSchema(Schema):
-    id=fields.Int(dump_only=True)
-    user_id=fields.Int(required=True)
-    item_id=fields.Int(required=True)
-    date=fields.DateTime(dump_only=True)
-    quantity=fields.Int(required=True)
-
-class OrderSchema(PlainOrderSchema):
-    user=fields.Nested(lambda:UserSchema(),dump_only=True)
-    item=fields.Nested(ItemSchema(), dump_only=True)
-
-class OrderUpdateSchema(Schema):
-    user_id=fields.Int()
-    item_id=fields.Int()
-    quantity=fields.Int()
-
 
 class UserSchema(Schema):
     id=fields.Int(dump_only=True)
     username=fields.Str(required=True)
     password=fields.Str(required=True)
-    orders=fields.List(fields.Nested(PlainOrderSchema(),dump_only=True))
+
 
 
