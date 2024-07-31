@@ -14,6 +14,7 @@ from schemas import UserSchema
 
 blp=Blueprint("Users", "users", description="Operations on users")
 
+
 @blp.route("/register")
 class UserRegister(MethodView):
     @blp.arguments(UserSchema)
