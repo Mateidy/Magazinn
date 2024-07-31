@@ -19,7 +19,6 @@ from resources.tag import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
 
 
-
 def create_app(db_url=None):
     app=Flask (__name__)
     load_dotenv()
@@ -41,7 +40,6 @@ def create_app(db_url=None):
 
     app.config["JWT_SECRET_KEY"]="295040099478539289169991040315992286316"
     jwt=JWTManager(app)
-
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header,jwt_payload):
@@ -69,9 +67,10 @@ def create_app(db_url=None):
         )
     @jwt.additional_claims_loader
     def add_claims_to_jwt(identity):
-        if identity==1:
-            return{"is_admin":True}
+        if identity== 4:
+            return {"is_admin":True}
         return {"is_admin":False}
+
 
     @jwt.expired_token_loader
     def expired_token_loader(jwt_header,jwt_payload):
