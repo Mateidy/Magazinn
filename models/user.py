@@ -1,12 +1,15 @@
 from db import db
 
+
 class UserModel(db.Model):
     __tablename__="users"
 
     id=db.Column(db.Integer, primary_key=True,autoincrement=True)
     username=db.Column(db.String(80),unique=True,nullable=False)
     password=db.Column(db.String(256), unique=True,nullable=False)
-    active=db.Column(db.Boolean())
+    active=db.Column(db.Boolean(),default=True)
 
-    roles=db.relationship( "Role",secondary="user_roles",back_populates="users")
+
+
+
 

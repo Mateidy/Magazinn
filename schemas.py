@@ -36,16 +36,17 @@ class TagAndItemSchema(Schema):
     item=fields.Nested(ItemSchema)
     tag=fields.Nested(TagSchema)
 
-class PlainProductSchema(Schema):
+
+class RoleSchema(Schema):
     id=fields.Int(dump_only=True)
     name=fields.Str(required=True)
-    price=fields.Float(required=True)
-
 
 class UserSchema(Schema):
     id=fields.Int(dump_only=True)
     username=fields.Str(required=True)
     password=fields.Str(required=True)
+    roles=fields.List(fields.Nested(RoleSchema))
+
 
 
 

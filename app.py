@@ -7,16 +7,49 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from dotenv import load_dotenv
 
-
-
 from db import db
 from blocklist import BLOCKLIST
-import models
+from models import StoreModel, ItemModel, TagModel, ItemTags, UserModel, RoleModel
+
 
 from resources.item import blp as ItemBlueprint
 from resources.store import blp as StoreBlueprint
 from resources.tag import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
+from resources.roles import blp as RoleBlueprint
+
+
+def create_roles():
+    admin_role = RoleModel.query.filter_by(name="admin").first()
+    customer_role = RoleModel.query.filter_by(name="customer").first()
+
+    if not admin_role:
+        admin_role = RoleModel(name="admin")
+        db.session.add(admin_role)
+    if not customer_role:
+        customer_role = RoleModel(name="customer")
+        db.session.add(customer_role)
+
+    try:
+        db.session.add(admin_role)
+        db.session.add(customer_role)
+        db.session.commit()
+    except Exception as e:
+        print(f"Error creating roles:{e}")
+        return None , None
+
+    return admin_role, customer_role
+
+
+def assign_roles_to_users(admin_role, customer_role):
+    users = UserModel.query.all()
+    for user in users:
+        if user.id == 4:
+            user.roles.append(admin_role)
+        else:
+            user.roles.append(customer_role)
+
+    db.session.commit()
 
 
 def create_app(db_url=None):
@@ -104,12 +137,14 @@ def create_app(db_url=None):
 
     with app.app_context():
         create_tables()
+        admin_role, customer_role = create_roles()
+        assign_roles_to_users(admin_role, customer_role)
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)
     api.register_blueprint(TagBlueprint)
     api.register_blueprint(UserBlueprint)
-
+    api.register_blueprint(RoleBlueprint)
 
     return app
 

@@ -67,13 +67,25 @@ class UserLogout(MethodView):
 
 @blp.route("/user/<int:user_id>")
 class User(MethodView):
+    @jwt_required()
     @blp.response(200,UserSchema)
     def get(self,user_id):
+        jwt=get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401, message="Admin privilege required.")
+
         user=UserModel.query.get_or_404(user_id)
         return user
 
+    @jwt_required()
     def delete(self,user_id):
+        jwt=get_jwt()
+        if not jwt.get("is_admin"):
+            abort(401, message="Admin privilege required.")
+
         user=UserModel.query.get_or_404(user_id)
         db.session.delete(user)
         db.session.commit()
         return {"message":"User deleted."} , 200
+
+
