@@ -5,6 +5,10 @@ class PlainItemSchema(Schema):
     name=fields.Str(required=True)
     price=fields.Float(required=True)
 
+class AddItemToOrderSchema(Schema):
+    item_id = fields.Int(required=True)
+    quantity = fields.Int(missing=1)
+
 class PlainStoreSchema(Schema):
     id=fields.Int(dump_only=True)
     name=fields.Str(required=True)
@@ -36,6 +40,10 @@ class TagAndItemSchema(Schema):
     item=fields.Nested(ItemSchema)
     tag=fields.Nested(TagSchema)
 
+class OrderSchema(Schema):
+    id=fields.Int(dump_only=True)
+    items=fields.List(fields.Nested(PlainItemSchema()),dump_only=True)
+    total_price=fields.Float(dump_only=True)
 
 class RoleSchema(Schema):
     id=fields.Int(dump_only=True)

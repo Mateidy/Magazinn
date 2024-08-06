@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from db import db
 from blocklist import BLOCKLIST
-from models import StoreModel, ItemModel, TagModel, ItemTags, UserModel, RoleModel
+from models import StoreModel, ItemModel, TagModel, ItemTags, UserModel, RoleModel, OrderModel
 
 
 from resources.item import blp as ItemBlueprint
@@ -17,6 +17,7 @@ from resources.store import blp as StoreBlueprint
 from resources.tag import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
 from resources.roles import blp as RoleBlueprint
+from resources.order import blp as OrderBlueprint
 
 
 def create_roles():
@@ -145,6 +146,7 @@ def create_app(db_url=None):
     api.register_blueprint(TagBlueprint)
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(RoleBlueprint)
+    api.register_blueprint(OrderBlueprint)
 
     return app
 
