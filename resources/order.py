@@ -1,6 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt , get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -61,12 +61,13 @@ class OrderList(MethodView):
 
 @blp.route("/order/<int:order_id>/add_item")
 class OrderItemAdd(MethodView):
-
+    @jwt_required()
     @blp.arguments(AddItemToOrderSchema, location='json')
     @blp.response(200,OrderSchema)
     def post(self,order_data,order_id):
+        user_id=get_jwt_identity()
         try:
-            order=OrderModel.query.get(order_id)
+            order=OrderModel(id=order_id,user_id=user_id)
             if not order:
                 order=OrderModel(id=order_id)
                 db.session.add(order)

@@ -42,8 +42,11 @@ class TagAndItemSchema(Schema):
 
 class OrderSchema(Schema):
     id=fields.Int(dump_only=True)
+    user_id=fields.Int(dump_only=True)
     items=fields.List(fields.Nested(PlainItemSchema()),dump_only=True)
     total_price=fields.Float(dump_only=True)
+    quantity=fields.Int(dump_only=True)
+    created_at=fields.Date(dump_only=True)
 
 class RoleSchema(Schema):
     id=fields.Int(dump_only=True)
