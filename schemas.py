@@ -6,6 +6,7 @@ class PlainItemSchema(Schema):
     price=fields.Float(required=True)
 
 class AddItemToOrderSchema(Schema):
+    user_id=fields.Int(required=True)
     item_id = fields.Int(required=True)
     quantity = fields.Int(missing=1)
 

@@ -61,15 +61,15 @@ class OrderList(MethodView):
 
 @blp.route("/order/<int:order_id>/add_item")
 class OrderItemAdd(MethodView):
-    @jwt_required()
+
     @blp.arguments(AddItemToOrderSchema, location='json')
     @blp.response(200,OrderSchema)
     def post(self,order_data,order_id):
-        user_id=get_jwt_identity()
+        user_id=order_data.get("user_id")
         try:
-            order=OrderModel(id=order_id,user_id=user_id)
+            order=OrderModel.query.filter_by(id=order_id,user_id=user_id).first()
             if not order:
-                order=OrderModel(id=order_id)
+                order=OrderModel(id=order_id,user_id=user_id)
                 db.session.add(order)
                 db.session.commit()
 
@@ -84,10 +84,17 @@ class OrderItemAdd(MethodView):
             if existing_order_item:
                 existing_order_item.quantity+=quantity
             else:
-                order.items.append(item)
+                order_item=OrderItemModel(
+                    order_id=order.id,
+                    item_id=item.id,
+                    quantity=quantity,
+                    price_per_unit=item.price,
+                    store_id=item.store_id
 
-            total_price=sum(item.price*oi.quantity for oi in order.items)
-            order.total_price=total_price
+                )
+                db.session.add(order_item)
+
+            order.total_price=sum(oi.price_per_unit*oi.quantity for oi in order.items)
 
             db.session.commit()
 
