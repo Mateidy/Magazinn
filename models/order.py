@@ -25,7 +25,7 @@ class OrderModel(db.Model):
     created_at=db.Column(db.DateTime, default=datetime.utcnow,nullable=False)
 
     user=db.relationship("UserModel", backref="orders", lazy="select")
-    order_items=db.relationship("OrderItemModel", back_populates="order",lazy="dynamic")
+    order_items=db.relationship("OrderItemModel", back_populates="order",lazy="select")
 
     @property
     def quantity(self):
