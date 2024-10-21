@@ -21,12 +21,12 @@ class OrderList(MethodView):
     @jwt_required()
     @blp.arguments(OrderSchema)
     @blp.response(200,OrderSchema)
-    def put(self,order_data,order_id):
+    def put(self,order_data):
         jwt=get_jwt()
         if not jwt.get("is_admin"):
             abort (401, message="Admin privilege required.")
         try:
-            order=OrderModel.query.get_or_404(order_id)
+            order=OrderModel.query.get_or_404(order_data.get("id"))
             order.status=order_data.get("status",order.status)
             db.session.commit()
             return order
@@ -68,16 +68,16 @@ class AddItemToOrder(MethodView):
             if not order:
                 abort (404,message=f"Order with ID {order_id} not found for this user.")
 
-            item_id=ItemModel.query.get("item_id")
+            item_id=order_data.get("item_id")
             quantity=order_data.get("quantity",1)
 
-            item=ItemModel.query.get_or_404("item_id")
+            item=ItemModel.query.get_or_404(item_id)
             if not item:
                 abort (404,message=f"Item with ID {item_id} not found .")
 
             existing_order_item=OrderItemModel.query.filter_by(order_id=order_id,item_id=item_id).first()
             if existing_order_item:
-                existing_order_item+=quantity
+                existing_order_item.quantity+=quantity
             else:
                 order_item=OrderItemModel(
                     order_id=order_id,

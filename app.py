@@ -1,7 +1,7 @@
 import os
 import secrets
 
-from flask import Flask , jsonify
+from flask import Flask , jsonify , render_template , request
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
@@ -18,6 +18,7 @@ from resources.tag import blp as TagBlueprint
 from resources.user import blp as UserBlueprint
 from resources.roles import blp as RoleBlueprint
 from resources.order import blp as OrderBlueprint
+
 
 
 def create_roles():
@@ -74,6 +75,10 @@ def create_app(db_url=None):
 
     app.config["JWT_SECRET_KEY"]="295040099478539289169991040315992286316"
     jwt=JWTManager(app)
+
+
+
+
 
     @jwt.token_in_blocklist_loader
     def check_if_token_in_blocklist(jwt_header,jwt_payload):
@@ -140,6 +145,8 @@ def create_app(db_url=None):
         create_tables()
         admin_role, customer_role = create_roles()
         assign_roles_to_users(admin_role, customer_role)
+
+
 
     api.register_blueprint(ItemBlueprint)
     api.register_blueprint(StoreBlueprint)

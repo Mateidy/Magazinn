@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard!</h1>
+    <button id="logout-button">Logout</button>
+
+    <script>
+        document.getElementById('logout-button').addEventListener('click', async function() {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                }
+            });
+
+            if (response.ok) {
+                localStorage.removeItem('access_token');
+                window.location.href = '/login';
+            }
+        });
+    </script>
+</body>
+</html>
