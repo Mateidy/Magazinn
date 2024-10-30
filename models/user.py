@@ -8,9 +8,3 @@ class UserModel(db.Model):
     username=db.Column(db.String(80),unique=True,nullable=False)
     password=db.Column(db.String(256), unique=True,nullable=False)
     active=db.Column(db.Boolean(),default=True)
-
-
-
-
-
-

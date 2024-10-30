@@ -10,6 +10,9 @@ from dotenv import load_dotenv
 from db import db
 from blocklist import BLOCKLIST
 from models import StoreModel, ItemModel, TagModel, ItemTags, UserModel, RoleModel, OrderModel
+from passlib.hash import pbkdf2_sha256
+from flask_jwt_extended import create_access_token, create_refresh_token , get_jwt_identity , jwt_required
+
 
 
 from resources.item import blp as ItemBlueprint
@@ -76,7 +79,34 @@ def create_app(db_url=None):
     app.config["JWT_SECRET_KEY"]="295040099478539289169991040315992286316"
     jwt=JWTManager(app)
 
+    @app.route('/login', methods=['GET','POST'])
+    def login():
+        if request.method=='GET':
+            return render_template('login.html')
+        data=request.get_json()
+        username=data.get('username')
+        password =data.get('password')
 
+        print(f"Username: {username}, Password: {password}")
+
+        user =UserModel.query.filter_by(username=username).first()
+
+        if user and pbkdf2_sha256.verify(password, user.password):
+            access_token = create_access_token(identity=user.id, fresh=True)
+            return jsonify(access_token=access_token), 200
+        else:
+            return jsonify(message="Invalid username or password"), 401
+
+    @app.route('/dashboard')
+    @jwt_required()
+    def dashboard():
+        print("Received request for dashboard")
+        user_id = get_jwt_identity()
+        print(f"User ID: {user_id}")
+        user=UserModel.query.get(user_id)
+        if user:
+            username=user.username
+        return render_template("dashboard.html", username=username)
 
 
 
@@ -136,8 +166,8 @@ def create_app(db_url=None):
         )
 
     def create_tables():
-        try:db.create_all()
-
+        try:
+            db.create_all()
         except Exception as e:
             print(f"Eroare :{e}")
 

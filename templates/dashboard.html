@@ -2,26 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Dashboard</title>
 </head>
 <body>
-    <h1>Welcome to the Dashboard!</h1>
-    <button id="logout-button">Logout</button>
+    <h1>Welcome to the Dashboard</h1>
+    <p>Hello, {{ username }}!</p>
+<div id="error-message"></div>
 
-    <script>
-        document.getElementById('logout-button').addEventListener('click', async function() {
-            const response = await fetch('/logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-                }
-            });
-
-            if (response.ok) {
-                localStorage.removeItem('access_token');
-                window.location.href = '/login';
-            }
-        });
-    </script>
 </body>
 </html>
